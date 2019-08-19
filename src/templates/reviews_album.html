@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Dashboard</title>
+	
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+	      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<!-- JS Styles -->
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+	        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+	        crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+	        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+	        crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+	        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+	        crossorigin="anonymous"></script>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='new_style.css') }}">
+</head>
+
+<body>
+<div class="container">
+	<div class="row top">
+		<h3>Record Reviews</h3>
+	</div>
+	<div class="row">
+		<div class="col-md md-5 text-center">
+			{% if user['id'] == -1 %}
+			<p>Welcome! Please login! </p>
+			{% else %}
+			<p>Welcome, {{user['username']}} </p>
+			<a href="/logout">Logout</a>
+			{% endif%}
+			<h2>{{data['name']}}</h2>
+			<p>{{data['artists'][0]['name']}}</p>
+			<img src="{{data['images'][1]['url']}}" alt="Artwork">
+			{% if user['id'] == -1 %}
+			<p>Please login to review this {{data['album_type']}}!</p>
+			{% else %}
+			<h4>Review this {{data['album_type']}}!</h4>
+			<form action="/review" method="POST">
+				<div class="row input-group mb-3">
+					<div class="col-sm sm-3">
+						<label for="stars">Score</label>
+						<select class="form-control" id="stars" name="stars">
+							<option value=1>🌮</option>
+							<option value=2>🌮🌮</option>
+							<option value=3>🌮🌮🌮</option>
+							<option value=4>🌮🌮🌮🌮</option>
+							<option value=5 selected>🌮🌮🌮🌮🌮</option>
+						</select>
+						<label for="text">Review text</label>
+						<textarea class="form-control" id="text" name="text" rows="3"></textarea>
+						<input type="hidden" value="{{data['id']}}" name="uri">
+						<input type="hidden" value="{{data['name']}}" name="title">
+						<input type="submit" value="Submit" class="btn btn-success">
+					</div>
+				</div>
+			</form>
+			
+			{% endif%}
+			{% if reviews %}
+			{% for review in reviews%}
+			<hr class="hr-3">
+			<h3>{{review["username"]}} | {{review["score"]}}</h3>
+			<p>{{review["text"]}}</p>
+			{% endfor%}
+			{% else %}
+			<p>Be the first to review this record!</p>
+			{% endif%}
+			
+			<form action="/search" method="POST">
+				<div class="row input-group mb-3">
+					<div class="col-sm sm-3">
+						<input name="search" type="text" class="form-control mb-3" placeholder="Search for albums">
+						<input type="submit" value="Submit" class="btn btn-success">
+					</div>
+				</div>
+			</form>
+		
+		</div>
+	</div>
+</div>
+
+</body>
+</html>

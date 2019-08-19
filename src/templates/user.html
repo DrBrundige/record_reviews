@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Dashboard</title>
+	
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+	      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<!-- JS Styles -->
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+	        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+	        crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+	        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+	        crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+	        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+	        crossorigin="anonymous"></script>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='new_style.css') }}">
+</head>
+
+<body>
+<div class="container">
+	<div class="row top">
+		<div class="col-md md-5">
+			<h3>Record Reviews</h3>
+			
+			<form action="/search" method="POST">
+				<div class="row input-group mb-3">
+					<div class="col-sm sm-3">
+						<div class="col-sm">
+							<input name="search" type="text" class="form-control mb-3" placeholder="Search for albums">
+						</div>
+						<div class="col-sm">
+							<input type="submit" value="Submit" class="btn btn-outline-light">
+						</div>
+					</div>
+				</div>
+			</form>
+		
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md text-center">
+			{% if user['id'] == -1 %}
+			<a href="/">Welcome! Please login!</a>
+			{% else %}
+			<p>Welcome, {{user['username']}} </p>
+			{% endif%}
+			
+			<hr class="hr-3">
+			<h2>{{this_user['username']}}</h2>
+			
+			{% if user_reviews %}
+			<h5>{{this_user['username']}}'s Reviews:</h5>
+			{% for review in user_reviews%}
+			<h3><a href="/record/{{review['album_uri']}}">{{review["album_title"]}}</a> | {{review["score"]}}</h3>
+			<p>{{review["text"]}}</p>
+			{% endfor%}
+			{% else %}
+			<p>{{this_user['username']}} has not reviewed any records!</p>
+			{% endif%}
+			
+			<a href="/logout">Logout</a>
+		</div>
+	</div>
+</div>
+
+</body>
+</html>
