@@ -15,12 +15,7 @@ import base64
 
 @app.route('/')
 def index():
-	if 'id' not in session:
-		session['id'] = -1
-	if 'username' not in session:
-		session['username'] = ""
-	if 'temp_name' not in session:
-		session['temp_name'] = ""
+	update_auth_key()
 
 	# print('Serving login screen')
 	return render_template('login.html', u=session['temp_name'])
@@ -123,7 +118,8 @@ def show_record(uri):
 	else:
 		user = {'id': session['id'], 'username': session['username']}
 
-	access = get_auth_key()
+	update_auth_key()
+	access = session['key']
 	head = {'Authorization': 'Bearer ' + access}
 	r = requests.get('https://api.spotify.com/v1/albums/' + uri, headers=head)
 	if r.status_code == 200:
@@ -205,6 +201,29 @@ def dashboard(id):
 		return render_template('user.html', this_user=this_user[0], user=current_user, user_reviews=user_reviews)
 
 
+@app.route('/review/<id>')
+def show_review(id):
+	if 'id' not in session:
+		current_user = {'id': -1, 'username': ''}
+	else:
+		current_user = {'id': session['id'], 'username': session['username']}
+
+	mysql = connectToMySQL('recordreviews')
+
+	query = "SELECT reviews.album_uri, reviews.text, reviews.score, users.username, users.id as user_id, reviews.created_at FROM reviews  JOIN users ON users.id = reviews.user_id WHERE reviews.id = %(i)s"
+	data = {
+		"i": id,
+	}
+	this_review = mysql.query_db(query, data)
+
+	if len(this_review) == 0:
+		print(f"No review with id {id} exists!")
+		return redirect('/')
+	else:
+
+		return render_template('show_review.html', r=this_review[0], user=current_user)
+
+
 @app.route('/search', methods=['POST'])
 def search():
 	if 'id' not in session:
@@ -230,10 +249,11 @@ def show_search(str):
 	else:
 		user = {'id': session['id'], 'username': session['username']}
 
-	access = get_auth_key()
+	update_auth_key()
+	access = session['key']
 	head = {'Authorization': 'Bearer ' + access}
 
-	params = {'q': str, 'type':'album', 'limit': 12}
+	params = {'q': str, 'type': 'album', 'limit': 12}
 
 	r = requests.get('https://api.spotify.com/v1/search', headers=head, params=params)
 
@@ -243,7 +263,7 @@ def show_search(str):
 		for result in search_results['albums']['items']:
 			print(result['name'])
 
-		return render_template('search_results.html', search_results = search_results['albums']['items'],search_str = str)
+		return render_template('search_results.html', search_results=search_results['albums']['items'], search_str=str)
 
 	else:
 		print('Request failed, error code: ' + str(r.status_code) + ' | ' + r.reason)
@@ -251,7 +271,30 @@ def show_search(str):
 	return render_template('login.html')
 
 
+# Renews Spotify authentication key if it does not exist or has expired
+# Also resets id if it does not exist
+def update_auth_key():
+	if 'id' not in session:
+		session['id'] = -1
+	if 'username' not in session:
+		session['username'] = ""
+	if 'temp_name' not in session:
+		session['temp_name'] = ""
+
+	if 'key' not in session:
+		print("Auth key does not exist!")
+		session['key'] = get_auth_key()
+		session['time'] = datetime.now() + timedelta(minutes=55)
+	if session['time'] < datetime.now():
+		print("Auth key has expired!")
+		session['key'] = get_auth_key()
+		session['time'] = datetime.now() + timedelta(minutes=55)
+
+	return
+
+
 def get_auth_key():
+	print("Resetting Auth key!")
 	client_id_str = 'c6fbe9bb305a403491e9a9098434ed94' + ':' + '2ac0945809784998a447621a63d84584'
 	client_id_64 = base64.b64encode(client_id_str.encode())
 
@@ -276,7 +319,7 @@ def logout():
 	return redirect('/')
 
 
-# create()
+print("Record Reviews 2019")
 
 if __name__ == "__main__":
 	app.run(debug=True)
