@@ -76,7 +76,7 @@ def register():
 		session['id'] = id
 		session['username'] = request.form['username']
 
-		return redirect(f'/user/{id}')
+		return redirect('/home')
 
 	return redirect('/')
 
@@ -103,12 +103,41 @@ def login():
 			id = username[0]['id']
 			session['id'] = id
 			session['username'] = username[0]['username']
-			return redirect(f'/user/{id}')
+			return redirect('/home')
 		else:
 			print("Password incorrect!")
 			flash("Could not log in!", 'login')
 
 	return redirect('/')
+
+
+@app.route('/home')
+def home():
+	if 'id' not in session:
+		user = {'id': -1, 'username': ''}
+	else:
+		user = {'id': session['id'], 'username': session['username']}
+
+	update_auth_key()
+	access = session['key']
+	head = {'Authorization': 'Bearer ' + access}
+
+	params = {'country': 'us', 'limit': 12}
+
+	r = requests.get('https://api.spotify.com/v1/browse/new-releases', headers=head, params=params)
+
+	if r.status_code == 200:
+		new_releases = r.json()
+
+		for result in new_releases['albums']['items']:
+			print(result['name'])
+
+		return render_template('new_releases.html', nr=new_releases['albums']['items'])
+
+	else:
+		print('Request failed, error code: ' + str(r.status_code) + ' | ' + r.reason)
+
+	return render_template('login.html')
 
 
 @app.route('/record/<uri>')
@@ -133,7 +162,17 @@ def show_record(uri):
 		}
 		reviews = mysql.query_db(query, data)
 
-		return render_template('reviews_album.html', data=record_data, user=user, reviews=reviews)
+		score = 0
+
+		for review in reviews:
+			score += review['score']
+		if len(reviews) > 0:
+			score = score / len(reviews)
+
+		tacos = get_tacos(score)
+
+		return render_template('reviews_album.html', data=record_data, user=user, reviews=reviews, score=score,
+		                       num=len(reviews), tacos=tacos)
 
 	elif r.status_code == 404:
 		print('No such record! Redirecting to failure page')
@@ -260,8 +299,8 @@ def show_search(str):
 	if r.status_code == 200:
 		search_results = r.json()
 
-		for result in search_results['albums']['items']:
-			print(result['name'])
+		# for result in search_results['albums']['items']:
+		# 	print(result['name'])
 
 		return render_template('search_results.html', search_results=search_results['albums']['items'], search_str=str)
 
@@ -309,6 +348,19 @@ def get_auth_key():
 		return access
 	else:
 		return ""
+
+
+def get_tacos(score):
+	if score > 4.7:
+		return "🌮🌮🌮🌮🌮"
+	if score > 3.7:
+		return "🌮🌮🌮🌮"
+	if score > 2.7:
+		return "🌮🌮🌮"
+	if score > 1.7:
+		return "🌮🌮"
+
+	return "🌮"
 
 
 @app.route('/logout')

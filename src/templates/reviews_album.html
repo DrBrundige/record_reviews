@@ -61,6 +61,8 @@
 			
 			{% endif%}
 			{% if reviews %}
+			<h1>{{tacos}}</h1>
+			<p>{{score}} tacos across {{num}} reviews</p>
 			{% for review in reviews%}
 			<hr class="hr-3">
 			<h3>{{review["username"]}} | {{review["score"]}}</h3>
