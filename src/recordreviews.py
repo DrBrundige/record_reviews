@@ -129,10 +129,10 @@ def home():
 	if r.status_code == 200:
 		new_releases = r.json()
 
-		for result in new_releases['albums']['items']:
-			print(result['name'])
+		# for result in new_releases['albums']['items']:
+		# 	print(result['name'])
 
-		return render_template('new_releases.html', nr=new_releases['albums']['items'])
+		return render_template('new_releases.html', nr=new_releases['albums']['items'], u=user)
 
 	else:
 		print('Request failed, error code: ' + str(r.status_code) + ' | ' + r.reason)
@@ -171,7 +171,7 @@ def show_record(uri):
 
 		tacos = get_tacos(score)
 
-		return render_template('reviews_album.html', data=record_data, user=user, reviews=reviews, score=score,
+		return render_template('reviews_album.html', data=record_data, u=user, reviews=reviews, score=score,
 		                       num=len(reviews), tacos=tacos)
 
 	elif r.status_code == 404:
@@ -237,7 +237,7 @@ def dashboard(id):
 		}
 		user_reviews = mysql.query_db(query, data)
 
-		return render_template('user.html', this_user=this_user[0], user=current_user, user_reviews=user_reviews)
+		return render_template('user.html', user=this_user[0], u=current_user, ur=user_reviews)
 
 
 @app.route('/review/<id>')
@@ -302,7 +302,7 @@ def show_search(str):
 		# for result in search_results['albums']['items']:
 		# 	print(result['name'])
 
-		return render_template('search_results.html', search_results=search_results['albums']['items'], search_str=str)
+		return render_template('search_results.html', sr=search_results['albums']['items'], str=str, u=user)
 
 	else:
 		print('Request failed, error code: ' + str(r.status_code) + ' | ' + r.reason)

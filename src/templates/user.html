@@ -16,54 +16,68 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
 	        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
 	        crossorigin="anonymous"></script>
-	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='new_style.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+	<link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:700|Roboto:300&display=swap" rel="stylesheet">
 </head>
 
 <body>
-<div class="container">
-	<div class="row top">
-		<div class="col-md md-5">
-			<h3>Record Reviews</h3>
-			
-			<form action="/search" method="POST">
-				<div class="row input-group mb-3">
-					<div class="col-sm sm-3">
-						<div class="col-sm">
-							<input name="search" type="text" class="form-control mb-3" placeholder="Search for albums">
-						</div>
-						<div class="col-sm">
-							<input type="submit" value="Submit" class="btn btn-outline-light">
-						</div>
-					</div>
-				</div>
-			</form>
-		
-		</div>
-	</div>
+<div class="top sticky-top">
 	<div class="row">
-		<div class="col-md text-center">
-			{% if user['id'] == -1 %}
-			<a href="/">Welcome! Please login!</a>
+		<div class="col col-lg-6">
+			<h1 class="mheader">RECORD REVIEWS</h1>
+		</div>
+		<div class="col col-sm-2">
+			<a href="/home">HOME</a>
+		</div>
+		<div class="col col-sm-2">
+			{% if u['id'] == -1 %}
+			<a href="/">LOGIN</a>
 			{% else %}
-			<p>Welcome, {{user['username']}} </p>
-			{% endif%}
-			
-			<hr class="hr-3">
-			<h2>{{this_user['username']}}</h2>
-			
-			{% if user_reviews %}
-			<h5>{{this_user['username']}}'s Reviews:</h5>
-			{% for review in user_reviews%}
-			<h3><a href="/record/{{review['album_uri']}}">{{review["album_title"]}}</a> | {{review["score"]}}</h3>
-			<p>{{review["text"]}}</p>
-			{% endfor%}
-			{% else %}
-			<p>{{this_user['username']}} has not reviewed any records!</p>
-			{% endif%}
-			
-			<a href="/logout">Logout</a>
+			<a href="/user/{{u['id']}}">{{u['username']}}</a>
+			{% endif %}
 		</div>
 	</div>
+</div>
+<div class="container">
+	<div class="row">
+		{% if ur %}
+		<div class="col text-center my-3">
+			<h2>Reviews by user {{user['username']}}:</h2>
+		</div>
+	</div>
+	
+	{% for review in ur %}
+	<div class="row">
+		<div class="col">
+			<h3 class="i"><a href="/record/{{review['album_uri']}}">{{review["album_title"]}}</a> | {{review["score"]}}
+			</h3>
+			<p>{{review["text"]}}</p>
+			<!--<hr class="hr-2">-->
+		</div>
+	</div>
+	{% endfor%}
+	{% else %}
+	<div class="row">
+		<div class="col text-center my-3">
+			<h2>User {{user['username']}} has not reviewed any records!</h2>
+		</div>
+	</div>
+	{% endif%}
+
+</div>
+<div class="top text-center center">
+	<h1 class="xsheader mb-2">SEARCH FOR MORE RECORDS</h1>
+	<div class="container">
+		<form action="/search" method="POST">
+			<div class="row input-group center mx-0">
+				<div class="col col-sm-4 mx-auto text-center">
+					<input name="search" type="text" class="form-control mb-2" placeholder="Search for albums">
+					<input type="submit" value="Submit" class="btn btn-outline-primary">
+				</div>
+			</div>
+		</form>
+	</div>
+	<a href="/logout">Logout</a>
 </div>
 
 </body>

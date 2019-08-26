@@ -16,29 +16,45 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
 	        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
 	        crossorigin="anonymous"></script>
-	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='new_style.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+	<link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:700|Roboto:300&display=swap" rel="stylesheet">
 </head>
 
 <body>
-<div class="container">
-	<div class="row top">
-		<h3>Record Reviews</h3>
-	</div>
+<div class="top sticky-top">
 	<div class="row">
-		<div class="col-md md-5 text-center">
-			{% if user['id'] == -1 %}
-			<p>Welcome! Please login! </p>
+		<div class="col col-lg-6">
+			<h1 class="mheader">RECORD REVIEWS</h1>
+		</div>
+		<div class="col col-sm-2">
+			<a href="/home">HOME</a>
+		</div>
+		<div class="col col-sm-2">
+			{% if u['id'] == -1 %}
+			<a href="/">LOGIN</a>
 			{% else %}
-			<p>Welcome, {{user['username']}} </p>
-			<a href="/logout">Logout</a>
-			{% endif%}
+			<a href="/user/{{u['id']}}">{{u['username']}}</a>
+			{% endif %}
+		</div>
+	</div>
+</div>
+<div class="container">
+	<div class="row">
+		<div class="col col-lg text-center">
 			<h2>{{data['name']}}</h2>
 			<p>{{data['artists'][0]['name']}}</p>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-md md-5 text-center">
 			<img src="{{data['images'][1]['url']}}" alt="Artwork">
-			{% if user['id'] == -1 %}
+		</div>
+		<div class="col-md md-5">
+			
+			{% if u['id'] == -1 %}
 			<p>Please login to review this {{data['album_type']}}!</p>
 			{% else %}
-			<h4>Review this {{data['album_type']}}!</h4>
+			<h4 class="i">Review this {{data['album_type']}}!</h4>
 			<form action="/review" method="POST">
 				<div class="row input-group mb-3">
 					<div class="col-sm sm-3">
@@ -51,38 +67,56 @@
 							<option value=5 selected>🌮🌮🌮🌮🌮</option>
 						</select>
 						<label for="text">Review text</label>
-						<textarea class="form-control" id="text" name="text" rows="3"></textarea>
+						<textarea class="form-control mb-2" id="text" name="text" rows="3"></textarea>
 						<input type="hidden" value="{{data['id']}}" name="uri">
 						<input type="hidden" value="{{data['name']}}" name="title">
-						<input type="submit" value="Submit" class="btn btn-success">
+						<input type="submit" value="Submit" class="btn btn-outline-success">
 					</div>
 				</div>
 			</form>
-			
 			{% endif%}
-			{% if reviews %}
-			<h1>{{tacos}}</h1>
-			<p>{{score}} tacos across {{num}} reviews</p>
-			{% for review in reviews%}
-			<hr class="hr-3">
-			<h3>{{review["username"]}} | {{review["score"]}}</h3>
-			<p>{{review["text"]}}</p>
-			{% endfor%}
-			{% else %}
-			<p>Be the first to review this record!</p>
-			{% endif%}
-			
-			<form action="/search" method="POST">
-				<div class="row input-group mb-3">
-					<div class="col-sm sm-3">
-						<input name="search" type="text" class="form-control mb-3" placeholder="Search for albums">
-						<input type="submit" value="Submit" class="btn btn-success">
-					</div>
-				</div>
-			</form>
-		
 		</div>
 	</div>
+	<div class="row">
+		{% if reviews %}
+		<div class="col text-center">
+			<h1 class="header">{{tacos}}</h1>
+		</div>
+	</div>
+	<div class="row text-center">
+		<div class="col text-center">
+			<p>{{score}} tacos across {{num}} reviews</p>
+			<hr class="hr-3">
+		</div>
+	</div>
+	<div class="row">
+		{% for review in reviews%}
+		<div class="col">
+			<h3 class="i">{{review["username"]}} | {{review["score"]}}</h3>
+			<p>{{review["text"]}}</p>
+			<!--<hr class="hr-2">-->
+		</div>
+		{% endfor%}
+		{% else %}
+		<div class="col">
+			<p>Be the first to review this record!</p>
+		</div>
+		{% endif%}
+	</div>
+</div>
+<div class="top text-center center">
+	<h1 class="xsheader mb-2">SEARCH FOR MORE RECORDS</h1>
+	<div class="container">
+		<form action="/search" method="POST">
+			<div class="row input-group center mx-0">
+				<div class="col col-sm-4 mx-auto text-center">
+					<input name="search" type="text" class="form-control mb-2" placeholder="Search for albums">
+					<input type="submit" value="Submit" class="btn btn-outline-primary">
+				</div>
+			</div>
+		</form>
+	</div>
+	<a href="/logout">Logout</a>
 </div>
 
 </body>

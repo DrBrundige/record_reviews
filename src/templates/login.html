@@ -1,72 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
-	<title>Dashboard</title>
-	
+	<title>Record Reviews</title>
+
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-	      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+		integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 	<!-- JS Styles -->
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-	        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-	        crossorigin="anonymous"></script>
+		integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+		crossorigin="anonymous"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-	        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-	        crossorigin="anonymous"></script>
+		integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+		crossorigin="anonymous"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-	        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-	        crossorigin="anonymous"></script>
-	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='new_style.css') }}">
+		integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+		crossorigin="anonymous"></script>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+	<link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:700|Roboto:300&display=swap" rel="stylesheet">
 </head>
 
 <body>
-<div class="container">
-	<div class="top row">
-		<h1>Dashboard</h1>
+	<div class="top">
+		<!-- <h1 class="header">T. BRUNDIGE JONES</h1> -->
+		<h1 class="header d-none d-sm-none d-md-block text-center">RECORD REVIEWS</h1>
+		<h1 class="mheader d-none d-sm-block d-md-none text-center">RECORD REVIEWS</h1>
+		<h1 class="xsheader d-block d-sm-none text-center">RECORD REVIEWS</h1>
 	</div>
-	<div class="row mb-3">
-		<div class="col">
-			<h3>Register</h3>
-			{% with messages = get_flashed_messages(category_filter=["register"]) %}
-			{% if messages %}
-			{% for message in messages %}
-			<h6 class="failure">{{message}}</h6>
-			{% endfor %}
-			{% endif %}
-			{% endwith %}
-			<form action="/register" method="POST">
-				<div class="row input-group mb-3">
-					<div class="col-md">
-						<input name="username" placeholder="Username" class="form-control mb-3" type="text" value="{{u}}">
-						<input name="pword1" placeholder="Password" class="form-control mb-3" type="password">
-						<input name="pword2" placeholder="Confirm Password" class="form-control mb-3" type="password">
-						<br>
-						<input type="submit" value="Register" class="btn btn-success">
+	<div class="container">
+		<div class="row mb-3">
+			<div class="col col-sm-2"></div>
+			<div class="col">
+				<h3>Register</h3>
+				{% with messages = get_flashed_messages(category_filter=["register"]) %}
+				{% if messages %}
+				{% for message in messages %}
+				<p class="failure">{{message}}</p>
+				{% endfor %}
+				{% endif %}
+				{% endwith %}
+				<form action="/register" method="POST">
+					<div class="row input-group mb-3">
+						<div class="col">
+							<input name="username" placeholder="Username" class="form-control mb-3" type="text" value="{{u}}">
+							<input name="pword1" placeholder="Password" class="form-control mb-3" type="password">
+							<input name="pword2" placeholder="Confirm Password" class="form-control mb-3" type="password">
+							<!-- <br> -->
+							<input type="submit" value="Register" class="btn btn-outline-success">
+						</div>
 					</div>
-				</div>
-			</form>
-		</div>
-		<div class="col">
-			<h3>Login</h3>
-			{% with messages = get_flashed_messages(category_filter=["login"]) %}
-			{% if messages %}
-			{% for message in messages %}
-			<h6 class="failure">{{message}}</h6>
-			{% endfor %}
-			{% endif %}
-			{% endwith %}
-			<form action="/login" method="POST">
-				<div class="row input-group mb-3">
-					<div class="col-md">
-						<input name="name" type="text" class="form-control mb-3" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" value="CrookedCrocodile">
-						<input name="password" type="password" class="form-control mb-3" placeholder="Password" aria-label="Password" aria-describedby="basic-addon1" value="Password123">
-						<input type="submit" value="Submit" class="btn btn-success">
+				</form>
+			</div>
+			<div class="col">
+				<h3>Login</h3>
+				{% with messages = get_flashed_messages(category_filter=["login"]) %}
+				{% if messages %}
+				{% for message in messages %}
+				<h6 class="failure">{{message}}</h6>
+				{% endfor %}
+				{% endif %}
+				{% endwith %}
+				<form action="/login" method="POST">
+					<div class="row input-group mb-3">
+						<div class="col">
+							<input name="name" type="text" class="form-control mb-3" placeholder="Username" aria-label="Username"
+								aria-describedby="basic-addon1" value="CrookedCrocodile">
+							<input name="password" type="password" class="form-control mb-3" placeholder="Password"
+								aria-label="Password" aria-describedby="basic-addon1" value="Password123">
+							<input type="submit" value="Submit" class="btn btn-outline-success">
+						</div>
 					</div>
-				</div>
-			</form>
+				</form>
+				<a href="/home">Continue as guest</a>
+			</div>
+			<div class="col col-sm-2"></div>
 		</div>
-	</div>
 
-</div>
+	</div>
 </body>
+
 </html>
