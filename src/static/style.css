@@ -24,6 +24,11 @@
 	--midnight-indigo: #00003f;
 }
 
+.content {
+    background-color: white;
+    min-height: 400px;
+}
+
 .container {
 	width: 100%;
 	/* background-color: #ffffffe0; */
@@ -111,7 +116,7 @@ a{
 
 .top a {
 	color: white;
-	text-shadow: 2px 2px var(--hyper-cyan);
+	text-shadow: 1px 1px var(--hyper-cyan);
 }
 
 p{

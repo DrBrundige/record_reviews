@@ -142,10 +142,19 @@ def home():
 
 @app.route('/record/<uri>')
 def show_record(uri):
+	user_review = []
 	if 'id' not in session:
 		user = {'id': -1, 'username': ''}
 	else:
 		user = {'id': session['id'], 'username': session['username']}
+		mysql = connectToMySQL('recordreviews')
+
+		query = "SELECT * FROM reviews WHERE album_uri = %(e)s AND user_id = %(u)s;"
+		data = {
+			"e": uri,
+			"u": session['id'],
+		}
+		user_review = mysql.query_db(query, data)
 
 	update_auth_key()
 	access = session['key']
@@ -156,9 +165,10 @@ def show_record(uri):
 
 		mysql = connectToMySQL('recordreviews')
 
-		query = "SELECT reviews.text, reviews.score, users.username as username, reviews.created_at FROM reviews JOIN users ON users.id = reviews.user_id WHERE album_uri = %(e)s ORDER BY reviews.created_at LIMIT 6;"
+		query = "SELECT reviews.id AS id, reviews.text, reviews.score, users.username as username, reviews.created_at FROM reviews JOIN users ON users.id = reviews.user_id WHERE album_uri = %(e)s ORDER BY reviews.created_at LIMIT 6;"
 		data = {
 			"e": uri,
+			"u": session['id'],
 		}
 		reviews = mysql.query_db(query, data)
 
@@ -172,7 +182,7 @@ def show_record(uri):
 		tacos = get_tacos(score)
 
 		return render_template('reviews_album.html', data=record_data, u=user, reviews=reviews, score=score,
-		                       num=len(reviews), tacos=tacos)
+		                       num=len(reviews), tacos=tacos, ur=user_review)
 
 	elif r.status_code == 404:
 		print('No such record! Redirecting to failure page')
@@ -210,6 +220,31 @@ def review():
 	return redirect(f'/user/{session["id"]}')
 
 
+@app.route('/update', methods=['POST'])
+def update():
+	if 'id' not in session:
+		session['id'] = -1
+
+	if session['id'] == -1:
+		print("Review failed! No user is logged in!")
+		return redirect('/')
+	else:
+		query = "UPDATE reviews SET score = %(s)s, text = %(t)s, updated_at = now() WHERE id = %(i)s;"
+		data = {
+			"s": request.form["stars"],
+			"t": request.form["text"],
+			"i": request.form['id']
+		}
+		print(query)
+		print(data)
+		mysql = connectToMySQL('recordreviews')
+		print(mysql.query_db(query, data))
+
+		print(f"Updated review!")
+
+	return redirect(f'/user/{session["id"]}')
+
+
 @app.route('/user/<id>')
 def dashboard(id):
 	if 'id' not in session:
@@ -243,13 +278,14 @@ def dashboard(id):
 @app.route('/review/<id>')
 def show_review(id):
 	if 'id' not in session:
-		current_user = {'id': -1, 'username': ''}
+		current_user = {'id': -1, 'username': '', 'likes': -1}
 	else:
-		current_user = {'id': session['id'], 'username': session['username']}
+		# likes: 0 = user does not like review, 1 = user likes review, 2 = user is review author
+		current_user = {'id': session['id'], 'username': session['username'], 'likes': 0}
 
 	mysql = connectToMySQL('recordreviews')
 
-	query = "SELECT reviews.album_uri, reviews.text, reviews.score, users.username, users.id as user_id, reviews.created_at FROM reviews  JOIN users ON users.id = reviews.user_id WHERE reviews.id = %(i)s"
+	query = "SELECT reviews.id AS id, reviews.album_uri, reviews.album_title, reviews.text, reviews.score, users.username, users.id as user_id, reviews.created_at FROM reviews  JOIN users ON users.id = reviews.user_id WHERE reviews.id = %(i)s"
 	data = {
 		"i": id,
 	}
@@ -259,8 +295,78 @@ def show_review(id):
 		print(f"No review with id {id} exists!")
 		return redirect('/')
 	else:
+		tacos = get_tacos(this_review[0]['score'])
 
-		return render_template('show_review.html', r=this_review[0], user=current_user)
+		# This query uses the same set of data as before
+		mysql = connectToMySQL('recordreviews')
+		query = "SELECT user_id FROM likes WHERE review_id = %(i)s"
+		data = {
+			"i": id,
+		}
+		likes = mysql.query_db(query, data)
+		current_user['no_likes'] = len(likes)
+
+		# Checks if logged in user wrote review
+		if current_user['id'] == this_review[0]['user_id']:
+			current_user['likes'] = 2
+		else:
+			for like in likes:
+				if like['user_id'] == current_user['id']:
+					current_user['likes'] = 1
+
+		return render_template('show_review.html', r=this_review[0], u=current_user, t=tacos)
+
+
+@app.route('/review/<id>/like')
+def like_review(id):
+	if 'id' in session:
+		mysql = connectToMySQL('recordreviews')
+
+		query = "INSERT INTO likes (user_id, review_id, created_at) VALUES (%(u)s,%(r)s,now())"
+		data = {
+			"u": session['id'],
+			"r": id,
+		}
+
+		new_like = mysql.query_db(query, data)
+
+	return redirect(f'/review/{id}')
+
+
+@app.route('/review/<id>/unlike')
+def unlike_review(id):
+	if 'id' in session:
+		mysql = connectToMySQL('recordreviews')
+
+		query = "DELETE FROM likes WHERE user_id = %(u)s AND review_id = %(r)s"
+		data = {
+			"u": session['id'],
+			"r": id,
+		}
+
+		delete_like = mysql.query_db(query, data)
+
+	return redirect(f'/review/{id}')
+
+
+@app.route('/review/<id>/delete')
+def delete_review(id):
+	if 'id' in session:
+		mysql = connectToMySQL('recordreviews')
+		query = "DELETE FROM likes WHERE review_id = %(r)s"
+		data = {
+			"r": id,
+		}
+		delete_likes = mysql.query_db(query, data)
+
+		mysql = connectToMySQL('recordreviews')
+		query = "DELETE FROM reviews WHERE id = %(r)s"
+		data = {
+			"r": id,
+		}
+		delete_likes = mysql.query_db(query, data)
+
+	return redirect(f'/home')
 
 
 @app.route('/search', methods=['POST'])

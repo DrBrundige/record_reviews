@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Dashboard</title>
+	<title>Record Reviews</title>
 	
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
 	      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -53,6 +53,26 @@
 			
 			{% if u['id'] == -1 %}
 			<p>Please login to review this {{data['album_type']}}!</p>
+			{% elif ur %}
+			<h4 class="i">Update your review for this {{data['album_type']}}!</h4>
+			<form action="/update" method="POST">
+				<div class="row input-group mb-3">
+					<div class="col-sm sm-3">
+						<label for="stars">Score</label>
+						<select class="form-control" name="stars">
+							<option value=1>🌮</option>
+							<option value=2>🌮🌮</option>
+							<option value=3>🌮🌮🌮</option>
+							<option value=4>🌮🌮🌮🌮</option>
+							<option value=5 selected>🌮🌮🌮🌮🌮</option>
+						</select>
+						<label for="text">Review text</label>
+						<textarea class="form-control mb-2" name="text" rows="3">{{ur[0]['text']}}</textarea>
+						<input type="hidden" value="{{ur[0]['id']}}" name="id">
+						<input type="submit" value="Submit" class="btn btn-outline-success">
+					</div>
+				</div>
+			</form>
 			{% else %}
 			<h4 class="i">Review this {{data['album_type']}}!</h4>
 			<form action="/review" method="POST">
@@ -91,9 +111,9 @@
 	</div>
 	<div class="row">
 		{% for review in reviews%}
-		<div class="col">
+		<div class="col col-lg-6">
 			<h3 class="i">{{review["username"]}} | {{review["score"]}}</h3>
-			<p>{{review["text"]}}</p>
+			<p>{{review["text"]}} | <a href="/review/{{review['id']}}">Read more</a></p>
 			<!--<hr class="hr-2">-->
 		</div>
 		{% endfor%}

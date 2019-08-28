@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Dashboard</title>
+	<title>Record Reviews</title>
 	
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
 	      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -46,12 +46,13 @@
 		</div>
 	</div>
 	
-	{% for review in ur %}
+	{% for r in ur %}
 	<div class="row">
 		<div class="col">
-			<h3 class="i"><a href="/record/{{review['album_uri']}}">{{review["album_title"]}}</a> | {{review["score"]}}
+			<h3 class="i"><a href="/record/{{r['album_uri']}}">{{r["album_title"]}}</a> | {{r["score"]}}
 			</h3>
-			<p>{{review["text"]}}</p>
+			<p>{{r["text"]}} | <a href="/review/{{r['id']}}">Read more</a></p>
+			
 			<!--<hr class="hr-2">-->
 		</div>
 	</div>
