@@ -1,14 +1,15 @@
-# dashboard
-Dashboard is a Python app that runs Flask and a MySQL database. It is formatted in Bootstrap and my own CSS. Its features include:
+# Record Reviews
+Record Reviews is a Python app that runs Flask and a MySQL database. It heavily relies on the Spotify API. It is formatted in Bootstrap and my own CSS. Its features include:
 
 **Login Screen**
-A standard login screen. Uses BCrypt to verify password and backend validations. Users who attempt to view dashboard without logging in are booted back to this screen.
+A standard login screen. Uses BCrypt to verify password and backend validations. Users may access the site without logging in but may not write reviews
 
-**Dashboard**
-The dashboard screen monitors the activity of another given program, for my purposes I used a mule. The header displays whether all mules in the past twenty-four hours have run successfully. The Latest Mules column displays the time, success, and name of the twelve most recently run mules. The Latest Reports column displays number successes and failures in the past eight and twenty-four hours.
+**Home Page**
+Displays the twelve most popular records according to the Spotify API. 
 
-**Custom Report**
-Custom Report allows users with permission level 2 or above to view latest mules or reports for a custom time frame. Custom Query allows users with permission level 8 or above to directly query the database. 
+**Show Record**
+Page for an individual record. Displays name, primary artist, and album artwork. Users may review the record from here. Displays other user's reviews and the average score of all reviews. 
 
-**Admin Panel**
-Admin Panel allows users to view the names and permission levels of other users. Users with permission level 9 can create new users as well. 
+**Other Features**
+User page - displays all reviews from a given user. Search - most pages have a section where users can search for records by name. Show Review - displays full text of an individual review. Other users can like the review, and the author can delete it. No Album - displays when the URI for a nonexistent album into the route. 
+

@@ -186,7 +186,7 @@ def show_record(uri):
 
 	elif r.status_code == 404:
 		print('No such record! Redirecting to failure page')
-		return render_template('no_album.html', uri=uri)
+		return render_template('no_album.html', uri=uri, u=user)
 	else:
 		print('Request failed, error code: ' + str(r.status_code) + ' | ' + r.reason)
 

@@ -16,31 +16,49 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
 	        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
 	        crossorigin="anonymous"></script>
-	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='new_style.css') }}">
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+	<link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:700|Roboto:300&display=swap" rel="stylesheet">
 </head>
 
 <body>
-<div class="container">
-	<div class="row top">
-		<h3>Record Reviews</h3>
+<div class="top sticky-top">
+	<div class="row">
+		<div class="col col-lg-6">
+			<h1 class="mheader">RECORD REVIEWS</h1>
+		</div>
+		<div class="col col-sm-2">
+			<a href="/home">HOME</a>
+		</div>
+		<div class="col col-sm-2">
+			{% if u['id'] == -1 %}
+			<a href="/">LOGIN</a>
+			{% else %}
+			<a href="/user/{{u['id']}}">{{u['username']}}</a>
+			{% endif %}
+		</div>
 	</div>
+</div>
+<div class="container content">
 	<div class="row">
 		<div class="col-md text-center">
 			<h3>404! Record not found</h3>
 			<p>No record exists with URI: {{uri}}</p>
-			
-			<h3>Search for albums</h3>
-			<form action="/form" method="POST">
-				<div class="row input-group mb-3">
-					<div class="col-sm sm-3">
-						<input name="search" type="text" class="form-control mb-3" placeholder="Search for albums">
-						<input type="submit" value="Submit" class="btn btn-success">
-					</div>
-				</div>
-			</form>
 		</div>
 	</div>
 </div>
-
+<div class="top text-center center">
+	<h1 class="xsheader mb-2">SEARCH FOR MORE RECORDS</h1>
+	<div class="container">
+		<form action="/search" method="POST">
+			<div class="row input-group center mx-0">
+				<div class="col col-sm-4 mx-auto text-center">
+					<input name="search" type="text" class="form-control mb-2" placeholder="Search for albums">
+					<input type="submit" value="Submit" class="btn btn-outline-primary">
+				</div>
+			</div>
+		</form>
+	</div>
+	<a href="/logout">Logout</a>
+</div>
 </body>
 </html>
